@@ -21,3 +21,10 @@ const searchHeatId = 'SELECT heatid, lastid, nextid, event, heat, \
     creation_date, lanes, name, swimstyle, competition, distance, \
     gender, relaycount, round FROM colorado.heatdata where heatid = ? LIMIT 10';
 
+module.exports = {
+        insertheatquery,
+        insertheatid,
+        updateheatid,
+        selectlastheatid,
+        searchHeatId
+}

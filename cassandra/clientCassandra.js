@@ -1,5 +1,6 @@
 const cassandraClient = require('./configCassandra')
 const { types } = require('cassandra-driver');
+const sql = require('./sqlQueries')
 
 const wkid = 1;
 
@@ -29,7 +30,7 @@ function add(heatdata) {
             })
             .then(() => {
                 console.log('insertheatid ' + wkid + ' ' + Uuid);
-                return cassandraClient.client.execute(insertheatid, params2, { prepare: true })
+                return cassandraClient.client.execute(sql.insertheatid, params2, { prepare: true })
             })
             .then(() => {
                 console.log('update last heat ' + lastUuid)
@@ -44,10 +45,10 @@ function add(heatdata) {
     })
 };
 
- function getLastID() {
+function getLastID() {
     const params = [wkid]
     return new Promise((resolve, reject) => {
-        cassandraClient.client.execute(selectlastheatid, params, { prepare: true })
+        cassandraClient.client.execute(sql.selectlastheatid, params, { prepare: true })
             .then((rs) => {
                 const row = rs.first();
                 const heatid = row.get(0);
@@ -60,8 +61,8 @@ function add(heatdata) {
     })
 };
 
- function insertNewHeatID(heatdata, newUuid ,lastUuid) {
-     console.log('insert')
+function insertNewHeatID(heatdata, newUuid, lastUuid) {
+    console.log('insert')
     return new Promise((resolve, reject) => {
         // const params = [newUuid, lastUuid, heatdata.event, heatdata.heat, heatdata.lanes, 'heatdata.name', heatdata.swimstyle, heatdata.competition, heatdata.distance, heatdata.gender, heatdata.relaycount, heatdata.round];
         cassandraClient.client.connect()
@@ -76,7 +77,7 @@ function add(heatdata) {
             .then((params) => {
                 console.log('execute with ')
                 console.log(params)
-                return cassandraClient.client.execute(insertheatquery, params, { prepare: true })
+                return cassandraClient.client.execute(sql.insertheatquery, params, { prepare: true })
             })
             .then(rs => {
                 console.log('insert heat successfull')
@@ -139,9 +140,9 @@ function clearlanesdata(row) {
 function updateLastHeatID(updateUuid, nextUuid) {
     return new Promise((resolve, reject) => {
         const params = [nextUuid, updateUuid];
-        client.connect()
+        cassandraClient.client.connect()
             .then(() =>
-                client.execute(updateheatid, params, { prepare: true }))
+                cassandraClient.client.execute(sql.updateheatid, params, { prepare: true }))
             .then(() => {
                 resolve()
             })
