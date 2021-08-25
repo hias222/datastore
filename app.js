@@ -29,7 +29,7 @@ if (debug) console.log('<app> Source ' + sourceMqttMode  + ' Topic:  ' + topic_n
 
 server.listen(port, () => console.log(`<app> Listening on port ${port}`));
 
-clientCassandra.add('{"hello}')
+//clientCassandra.add('{"hello}')
 
 client.on('connect', function () {
   console.log('<app> ' + sourceMqttMode  + ' backend connected');
@@ -52,8 +52,9 @@ setInterval(checkMQTT, 1000);
 client.on('message', function (topic, message) {
   //console.log('websocket backend', topic, message.toString());
   jsonMessage = JSON.parse(message)
-  console.log('Message from topic ' + topic)
-  console.log(jsonMessage.event + ' - ' + jsonMessage.heat)
+  console.log('<app> Message from topic ' + topic)
+  console.log('<app> ' + jsonMessage.event + ' - ' + jsonMessage.heat)
+  clientCassandra.add(jsonMessage)
   if (debug) console.log(jsonMessage)
 });
 

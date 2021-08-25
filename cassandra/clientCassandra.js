@@ -2,6 +2,9 @@ const cassandraClient = require('./configCassandra')
 const { types } = require('cassandra-driver');
 const sql = require('./sqlQueries')
 
+require('dotenv').config();
+var debug = process.env.MQTT_DEBUG === 'true' ? true : false;
+
 const wkid = 1;
 
 function constructor() {
@@ -15,7 +18,7 @@ function add(heatdata) {
     return new Promise((resolve, reject) => {
         const Uuid = types.Uuid.random();
         let lastUuid;
-        const logg = Uuid + ' e: ' + heatdata.event + ' h: ' + heatdata.heat
+        const logg = '<clientCassandra> ' +  Uuid + ' e: ' + heatdata.event + ' h: ' + heatdata.heat
         console.log(logg.toString());
         // logger.info(JSON.stringify(heatdata));
         const params2 = [wkid, Uuid]
@@ -25,20 +28,19 @@ function add(heatdata) {
                 getLastID())
             .then(result => {
                 lastUuid = result;
-                console.log('last id ' + result + ' new ' + Uuid);
+                if (debug) console.log('<clientCassandra> last id ' + result + ' new ' + Uuid);
                 return insertNewHeatID(heatdata, Uuid, result)
             })
             .then(() => {
-                console.log('insertheatid ' + wkid + ' ' + Uuid);
                 return cassandraClient.client.execute(sql.insertheatid, params2, { prepare: true })
             })
             .then(() => {
-                console.log('update last heat ' + lastUuid)
+                console.log('<clientCassandra> update last heat ' + lastUuid)
                 updateLastHeatID(lastUuid, Uuid)
             })
             .then(() => resolve({ 'uuid': Uuid }))
             .catch(reason => {
-                console.log('failure in add heat')
+                console.log('<clientCassandra> failure in add heat')
                 console.log(reason)
                 //return reject({ 'uuid': Uuid, 'reason': reason })
             })
@@ -62,30 +64,27 @@ function getLastID() {
 };
 
 function insertNewHeatID(heatdata, newUuid, lastUuid) {
-    console.log('insert')
     return new Promise((resolve, reject) => {
         // const params = [newUuid, lastUuid, heatdata.event, heatdata.heat, heatdata.lanes, 'heatdata.name', heatdata.swimstyle, heatdata.competition, heatdata.distance, heatdata.gender, heatdata.relaycount, heatdata.round];
         cassandraClient.client.connect()
             .then(() =>
                 lanesdata(heatdata.lanes))
             .then((lanes) => {
-                console.log('ready ' + JSON.stringify(lanes))
+                if (debug) console.log('<clientCassandra> ready ' + JSON.stringify(lanes))
                 const params = [newUuid, lastUuid, heatdata.event, heatdata.heat, heatdata.lanes, heatdata.name, heatdata.swimstyle, heatdata.competition, heatdata.distance, heatdata.gender, heatdata.relaycount, heatdata.round];
                 // const params = [newUuid, lastUuid, lanes]
                 return params
             })
             .then((params) => {
-                console.log('execute with ')
-                console.log(params)
+                if (debug) console.log('<clientCassandra> execute with ' + JSON.stringify(params))
                 return cassandraClient.client.execute(sql.insertheatquery, params, { prepare: true })
             })
             .then(rs => {
-                console.log('insert heat successfull')
-                // logger.info(params)
+                console.log('<clientCassandra> insert heat successfull ' + heatdata.event + ' - ' + heatdata.heat)
                 resolve()
             })
             .catch((reason) => {
-                console.log('failed insert heat error ' + reason)
+                console.log('<clientCassandra> failed insert heat error ' + reason)
                 reject(reason.toString())
             })
     })
