@@ -3,15 +3,7 @@ const AWS = require('aws-iot-device-sdk/device')
 const SQS = require('./sqsConnect')
 
 var debug = process.env.MQTT_DEBUG === 'true' ? true : false;
-
-/*
-node node_modules/aws-iot-device-sdk/examples/device-example.js 
---host-name=a101aihtfyydn6-ats.iot.eu-central-1.amazonaws.com 
---private-key=colorado.private.key 
---client-certificate=colorado.cert.pem 
---ca-certificate=root-CA.crt 
---client-id=sdk-nodejs-d9122ba1-c0df-4470-a82f-6cd8b7c04e21
-*/
+var dstMqttMode = process.env.SRC_MQTT_MODE || "MQTT"
 
 const connect = { MQTT, AWS, SQS };
 
@@ -49,4 +41,32 @@ module.exports = {
         }
 
     }
+};
+
+module.exports.deleteMessage = (params) => {
+    return new Promise((resolve, reject) => {
+        if (dstMqttMode === 'SQS') {
+            SQS.deleteMe(params)
+                .then((data) => {
+                    console.log('<connectFactory> delete ' + data)
+                    resolve('success')
+                })
+                .catch((err) => {
+                    reject(err)
+                })
+
+        } else {
+            console.log('not AWS')
+            resolve('nothing to do')
+        }
+    })
+    /*
+    return new Promise((resolve, reject) => {
+        if (dstMqttMode === 'AWS') {
+            SQS.deleteMsg(params)
+        }
+        console.log('delete')
+        resolve('success')
+    })
+    */
 };

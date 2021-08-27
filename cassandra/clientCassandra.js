@@ -14,7 +14,7 @@ function constructor() {
 };
 
 
-function add(heatdata) {
+async function add(heatdata) {
     return new Promise((resolve, reject) => {
         const Uuid = types.Uuid.random();
         let lastUuid;
@@ -41,8 +41,8 @@ function add(heatdata) {
             .then(() => resolve({ 'uuid': Uuid }))
             .catch(reason => {
                 console.log('<clientCassandra> failure in add heat')
-                console.log(reason)
-                //return reject({ 'uuid': Uuid, 'reason': reason })
+                if (debug) console.log(reason)
+                return reject(reason.info)
             })
     })
 };

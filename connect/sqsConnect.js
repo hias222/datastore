@@ -1,4 +1,5 @@
 // Load the AWS SDK for Node.jss
+const { ConnectContactLens } = require('aws-sdk');
 var AWS = require('aws-sdk');
 // Set the region
 // export
@@ -57,8 +58,8 @@ class SQSEmitter extends EventEmitter {
     return this.SQSconnected
   }
 
-  sendMessage(message) {
-    this.emit('message', 'SQS', JSON.stringify(message));
+  sendMessage(message, deleteParams) {
+    this.emit('message', 'SQS', JSON.stringify(message), JSON.stringify(deleteParams));
   }
 
   async getSQSMessages() {
@@ -93,16 +94,21 @@ class SQSEmitter extends EventEmitter {
         } else if (data.Messages) {
           self.SQSconnected = true
           var newMessage = SQSMessageHandler(data.Messages)
-          self.sendMessage(newMessage)
           var deleteParams = {
             QueueUrl: self.params.QueueUrl,
             ReceiptHandle: data.Messages[0].ReceiptHandle
           };
+          self.sendMessage(newMessage, deleteParams)
+          /*
           sqs.deleteMessage(deleteParams, function (err, data) {
             if (err) {
               console.log("Delete Error", err);
+            } else {
+              console.log("Delete Message " + data);
             }
           });
+          */
+          console.log('<sqsConnect> proceed Message')
           resolve('new message');
         } else {
           resolve('no data');
@@ -116,3 +122,19 @@ class SQSEmitter extends EventEmitter {
 const myEmitter = new SQSEmitter();
 
 module.exports = myEmitter
+
+module.exports.deleteMe = (params) => {
+  return new Promise((resolve, reject) => {
+    sqs.deleteMessage(JSON.parse(params), function (err, data) {
+      if (err) {
+        console.log("Delete Error", err);
+        reject(err)
+      } else {
+        console.log("Delete Message " );
+        if (debug) console.log(data)
+        resolve('success')
+      }
+    });
+  })
+}
+

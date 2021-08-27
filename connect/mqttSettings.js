@@ -7,7 +7,8 @@ var mqtt_username_local = typeof process.env.MQTT_USERNAME_LOCAL !== "undefined"
 var mqtt_password_local = typeof process.env.MQTT_PASSWORD_LOCAL !== "undefined" ? process.env.MQTT_PASSWORD_LOCAL : 'mqtt';
 var debug = process.env.MQTT_DEBUG === 'true' ? true : false; 
 var dstMqttMode = process.env.SRC_MQTT_MODE || "MQTT"
-var queueURL = process.env.QUEUE_URL || "https://sqs.eu-central-1.amazonaws.com/654384432543/datamapping";
+var sqsQueue = process.env.SRC_CHANNEL_NAME || "storechannel"
+var queueURL = process.env.QUEUE_URL || "https://sqs.eu-central-1.amazonaws.com/654384432543";
 
 var settings = {
     keepalive: 2000,
@@ -29,8 +30,8 @@ if (dstMqttMode === 'SQS'){
         MessageAttributeNames: [
           "All"
         ],
-        QueueUrl: queueURL,
-        VisibilityTimeout: 0,
+        QueueUrl: queueURL + '/' + sqsQueue,
+        VisibilityTimeout: 30,
         WaitTimeSeconds: 20
       };
 
