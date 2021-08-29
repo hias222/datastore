@@ -127,10 +127,10 @@ module.exports.deleteMe = (params) => {
   return new Promise((resolve, reject) => {
     sqs.deleteMessage(JSON.parse(params), function (err, data) {
       if (err) {
-        console.log("Delete Error", err);
+        console.log("<sqsConnect> Delete Error", err);
         reject(err)
       } else {
-        console.log("Delete Message " );
+        console.log("<sqsConnect> Delete Message " );
         if (debug) console.log(data)
         resolve('success')
       }
