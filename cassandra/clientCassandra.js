@@ -18,9 +18,11 @@ async function add(heatdata) {
     return new Promise((resolve, reject) => {
         const Uuid = types.Uuid.random();
         let lastUuid;
-        const logg = '<clientCassandra> ' +  Uuid + ' e: ' + heatdata.event + ' h: ' + heatdata.heat
+        const logg = '<clientCassandra> Add' +  Uuid + ' e: ' + heatdata.event + ' h: ' + heatdata.heat
         console.log(logg.toString());
-        // logger.info(JSON.stringify(heatdata));
+
+        if (debug) console.log(JSON.stringify(heatdata))
+
         const params2 = [wkid, Uuid]
 
         cassandraClient.client.connect()
@@ -32,6 +34,7 @@ async function add(heatdata) {
                 return insertNewHeatID(heatdata, Uuid, result)
             })
             .then(() => {
+                // update last heat id overall for gui start
                 return cassandraClient.client.execute(sql.insertheatid, params2, { prepare: true })
             })
             .then(() => {
@@ -70,13 +73,13 @@ function insertNewHeatID(heatdata, newUuid, lastUuid) {
             .then(() =>
                 lanesdata(heatdata.lanes))
             .then((lanes) => {
-                if (debug) console.log('<clientCassandra> ready ' + JSON.stringify(lanes))
+                if (debug) console.log('<clientCassandra> checked lanes data -->  ' + JSON.stringify(lanes))
                 const params = [newUuid, lastUuid, heatdata.event, heatdata.heat, heatdata.lanes, heatdata.name, heatdata.swimstyle, heatdata.competition, heatdata.distance, heatdata.gender, heatdata.relaycount, heatdata.round];
                 // const params = [newUuid, lastUuid, lanes]
                 return params
             })
             .then((params) => {
-                if (debug) console.log('<clientCassandra> execute with ' + JSON.stringify(params))
+                if (debug) console.log('<clientCassandra> insertheatquery with ' + JSON.stringify(params))
                 return cassandraClient.client.execute(sql.insertheatquery, params, { prepare: true })
             })
             .then(rs => {
@@ -109,6 +112,7 @@ function lanesdata(lanes) {
                 if (lanes[lane].finishtime === undefined) lanes[lane].finishtime = '00:00,00'
                 if (lanes[lane].heat === undefined) lanes[lane].heat = '0'
             }
+            lanes[lane] = JSON.stringify(lanes[lane])
         }
         // logger.log(lanes)
         return resolve(lanes)
