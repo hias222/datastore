@@ -29,8 +29,6 @@ if (debug) console.log('<app> Source ' + sourceMqttMode + ' Topic:  ' + topic_na
 
 server.listen(port, () => console.log(`<app> Listening on port ${port}`));
 
-//clientCassandra.add('{"hello}')
-
 client.on('connect', function () {
   console.log('<app> ' + sourceMqttMode + ' backend connected');
   client.subscribe(topic_name);

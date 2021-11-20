@@ -60,7 +60,13 @@ function getLastID() {
                 return resolve(heatid)
             })
             .catch((reason) => {
-                return reject(reason.toString())
+                const heatid = '4e2c1f5c-4121-4a8c-9ebc-521b5a8b1e1a'
+                const paramnew = ['0', heatid]
+                cassandraClient.client.execute(sql.insertheatid, paramnew, { prepare: true })
+                console.log(reason)
+                console.log("create new event")
+                return resolve(heatid)
+                //return reject(reason.toString())
             })
 
     })
