@@ -46,3 +46,9 @@ Settings for AWS
 SRC_MQTT_MODE=SQS
 SRC_CHANNEL_NAME=storechannel
 QUEUE_URL=https://sqs.eu-central-1.amazonaws.com/654384432543
+
+### keyspaces
+
+datacenter
+ use system;
+select data_center from local;
