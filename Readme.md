@@ -31,3 +31,18 @@ DEST_MQTT_HOST
 docker run -p 4001:4001 datastore
 docker images
 ```
+
+## MQQT
+
+### AWS
+
+```bash
+# AWS_ACCESS_KEY_ID
+# AWS_SECRET_ACCESS_KEY
+docker run --name=datastore -p 4001:4001 --rm -e SRC_MQTT_MODE=SQS -e AWS_ACCESS_KEY_ID=123 -e AWS_SECRET_ACCESS_KEY=123 displaysocket
+```
+
+Settings for AWS
+SRC_MQTT_MODE=SQS
+SRC_CHANNEL_NAME=storechannel
+QUEUE_URL=https://sqs.eu-central-1.amazonaws.com/654384432543

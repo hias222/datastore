@@ -25,8 +25,6 @@ class SQSEmitter extends EventEmitter {
     super();
 
     this.params = {}
-
-
     this.waittime = 100;
 
     this.SQSconnected = false;

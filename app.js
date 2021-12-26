@@ -31,6 +31,7 @@ server.listen(port, () => console.log(`<app> Listening on port ${port}`));
 
 client.on('connect', function () {
   console.log('<app> ' + sourceMqttMode + ' backend connected');
+  clientCassandra.constructor();
   client.subscribe(topic_name);
 });
 

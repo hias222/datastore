@@ -1,3 +1,4 @@
+require('custom-env').env();
 require('dotenv').config()
 
 //var mqttpath = '/wsmqtt'

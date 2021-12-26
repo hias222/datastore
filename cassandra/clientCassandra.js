@@ -2,15 +2,18 @@ const cassandraClient = require('./configCassandra')
 const { types } = require('cassandra-driver');
 const sql = require('./sqlQueries')
 
+require('custom-env').env();
 require('dotenv').config();
+
 var debug = process.env.MQTT_DEBUG === 'true' ? true : false;
 
 const wkid = 1;
 
 function constructor() {
+    console.log("constructor cassandra")
     cassandraClient.client.connect()
-        .then(() => logger.info('connected'))
-        .catch((data) => logger.error(data));
+        .then(() => console.log('connected'))
+        .catch((data) => console.log(data));
 };
 
 
@@ -75,6 +78,12 @@ function getLastID() {
 function insertNewHeatID(heatdata, newUuid, lastUuid) {
     return new Promise((resolve, reject) => {
         // const params = [newUuid, lastUuid, heatdata.event, heatdata.heat, heatdata.lanes, 'heatdata.name', heatdata.swimstyle, heatdata.competition, heatdata.distance, heatdata.gender, heatdata.relaycount, heatdata.round];
+        
+        if (heatdata.event === 0) {
+            console.log('<clientCassandra> nothing to do event ' + heatdata.event)
+            resolve()
+        } 
+        
         cassandraClient.client.connect()
             .then(() =>
                 lanesdata(heatdata.lanes))
@@ -164,3 +173,4 @@ function updateLastHeatID(updateUuid, nextUuid) {
 
 
 module.exports.add = add
+module.exports.constructor = constructor
