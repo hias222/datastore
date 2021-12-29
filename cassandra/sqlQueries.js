@@ -4,7 +4,7 @@ const insertheatquery = 'INSERT INTO colorado.heatdata \
  VALUES (?, ?, ?, ?, toTimeStamp(now()), ?, ?, ?, ?, ?, ?, ? ,?)';
 
 const insertheatid = 'INSERT INTO colorado.heatids \
-    (wkid,creation_date, heatID ) \
+    (wkid,creation_date, heatid ) \
         VALUES (?,toTimeStamp(now()), ?)';
 
 const updateheatid = 'UPDATE colorado.heatdata \
@@ -14,8 +14,8 @@ const updateheatid = 'UPDATE colorado.heatdata \
 
 const selectlastheatid = 'SELECT heatid, creation_date, wkid \
         FROM colorado.heatids \
-        where wkid= ? \
-        LIMIT 10';
+        LIMIT 1';
+// where wkid= ? \
 
 const searchHeatId = 'SELECT heatid, lastid, nextid, event, heat, \
     creation_date, lanes, name, swimstyle, competition, distance, \

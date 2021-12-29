@@ -36,6 +36,10 @@ docker images
 
 ### AWS
 
+### SQS
+
+SQS connects with IAM user
+
 ```bash
 # AWS_ACCESS_KEY_ID
 # AWS_SECRET_ACCESS_KEY
@@ -49,6 +53,23 @@ QUEUE_URL=https://sqs.eu-central-1.amazonaws.com/654384432543
 
 ### keyspaces
 
+connect with csql
+
+```bash
+export SSL_CERTFILE=sf-class2-root.crt
+cqlsh cassandra.eu-central-1.amazonaws.com 9142 -u "<generated-keyspace-useranme>" -p "<generated-keyspace-password>" --ssl --ssl_context PROTOCOL_TLSv1_2
+```
+
+keyspaces connects with seperate user, configured with iam console
+
 datacenter
  use system;
 select data_center from local;
+
+KEYSPACE=colorado
+CONTACTPOINT=cassandra.eu-central-1.amazonaws.com
+CONTACTPOINT_PORT=9142
+LOCALDATACENTER='eu-central-1'
+SSLCONNECT=aws
+CASSANDRA_USER=co..
+CASSANDRA_PASSWORD=cl..
