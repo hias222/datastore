@@ -34,6 +34,12 @@ async function add(heatdata) {
         cassandraClient.client.connect()
             .then(() =>
                 getLastID())
+            .then((result) => {
+                lastUuid = result;
+                console.log('<clientCassandra> update last heat ' + lastUuid)
+                updateLastHeatID(lastUuid, Uuid)
+                return lastUuid
+            })
             .then(result => {
                 lastUuid = result;
                 if (debug) console.log('<clientCassandra> last id ' + result + ' new ' + Uuid);
@@ -42,10 +48,6 @@ async function add(heatdata) {
             .then(() => {
                 // update last heat id overall for gui start
                 return cassandraClient.client.execute(sql.insertheatid, params2, { prepare: true, consistency: types.consistencies.localQuorum })
-            })
-            .then(() => {
-                console.log('<clientCassandra> update last heat ' + lastUuid)
-                updateLastHeatID(lastUuid, Uuid)
             })
             .then(() => resolve({ 'uuid': Uuid }))
             .catch(reason => {
@@ -101,7 +103,7 @@ function insertNewHeatID(heatdata, newUuid, lastUuid) {
                 return cassandraClient.client.execute(sql.insertheatquery, params, { prepare: true, consistency: types.consistencies.localQuorum })
             })
             .then(rs => {
-                console.log('<clientCassandra> insert heat successfull ' + heatdata.event + ' - ' + heatdata.heat)
+                console.log('<clientCassandra> insert heat successfull ' + heatdata.event + ' - ' + heatdata.heat + ' uuid ' + newUuid)
                 resolve()
             })
             .catch((reason) => {
