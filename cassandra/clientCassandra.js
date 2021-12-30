@@ -34,19 +34,22 @@ async function add(heatdata) {
         cassandraClient.client.connect()
             .then(() =>
                 getLastID())
+            .then(result => {
+                lastUuid = result;
+                console.log('<clientCassandra> new colorado.heatdata ' + Uuid + ' last ' +  result );
+                // colorado.heatdata 
+                insertNewHeatID(heatdata, Uuid, result)
+                return lastUuid
+            })
             .then((result) => {
                 lastUuid = result;
-                console.log('<clientCassandra> update last heat ' + lastUuid)
+                console.log('<clientCassandra> update colorado.heatdata with lastuuid ' + lastUuid)
                 updateLastHeatID(lastUuid, Uuid)
                 return lastUuid
             })
-            .then(result => {
-                lastUuid = result;
-                if (debug) console.log('<clientCassandra> last id ' + result + ' new ' + Uuid);
-                return insertNewHeatID(heatdata, Uuid, result)
-            })
             .then(() => {
                 // update last heat id overall for gui start
+                console.log('<clientCassandra> update colorado.heatids with new id ' + Uuid)
                 return cassandraClient.client.execute(sql.insertheatid, params2, { prepare: true, consistency: types.consistencies.localQuorum })
             })
             .then(() => resolve({ 'uuid': Uuid }))
@@ -59,9 +62,9 @@ async function add(heatdata) {
 };
 
 function getLastID() {
-    // const params = [wkid]
+    const params = [wkid]
     return new Promise((resolve, reject) => {
-        cassandraClient.client.execute(sql.selectlastheatid, { prepare: true })
+        cassandraClient.client.execute(sql.selectlastheatid,params, { prepare: true })
             .then((rs) => {
                 const row = rs.first();
                 const heatid = row.get(0);
@@ -103,7 +106,7 @@ function insertNewHeatID(heatdata, newUuid, lastUuid) {
                 return cassandraClient.client.execute(sql.insertheatquery, params, { prepare: true, consistency: types.consistencies.localQuorum })
             })
             .then(rs => {
-                console.log('<clientCassandra> insert heat successfull ' + heatdata.event + ' - ' + heatdata.heat + ' uuid ' + newUuid)
+                console.log('<clientCassandra> insert coloado.heatdata successfull ' + heatdata.event + ' - ' + heatdata.heat + ' uuid ' + newUuid)
                 resolve()
             })
             .catch((reason) => {

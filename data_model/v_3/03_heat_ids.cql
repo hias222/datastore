@@ -6,7 +6,7 @@ drop TABLE if exists colorado.heatids;
 
 CREATE TABLE colorado.heatids
 ( wkid int, creation_date timestamp, heatid uuid,
-PRIMARY KEY (wkid, creation_date) ) 
+PRIMARY KEY (wkid) ) 
 WITH CLUSTERING ORDER BY (creation_date DESC)
 ;
 

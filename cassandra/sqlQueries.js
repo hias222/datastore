@@ -14,6 +14,7 @@ const updateheatid = 'UPDATE colorado.heatdata \
 
 const selectlastheatid = 'SELECT heatid, creation_date, wkid \
         FROM colorado.heatids \
+        where wkid= ? \
         LIMIT 1';
 // where wkid= ? \
 
